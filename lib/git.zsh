@@ -1,9 +1,32 @@
 # get the name of the branch we are on
 function git_prompt_info() {
-  if [[ "$(command git config --get oh-my-zsh.hide-status 2>/dev/null)" != "1" ]]; then
-    ref=$(command git symbolic-ref HEAD 2> /dev/null) || \
-    ref=$(command git rev-parse --short HEAD 2> /dev/null) || return 0
-    echo "$ZSH_THEME_GIT_PROMPT_PREFIX${ref#refs/heads/}$(parse_git_dirty)$ZSH_THEME_GIT_PROMPT_SUFFIX"
+  if command git rev-parse &> /dev/null &&
+     [[ "$(command git config --get oh-my-zsh.hide-status 2>/dev/null)" != "1" ]]
+  then
+    if branch=$(command git symbolic-ref HEAD 2> /dev/null); then
+      prefix="$ZSH_THEME_GIT_PROMPT_NAMED_BRANCH_PREFIX"
+      middle="${branch##refs/heads/}"
+      suffix="$ZSH_THEME_GIT_PROMPT_NAMED_BRANCH_SUFFIX"
+    else
+      sha=$(command git rev-parse --short HEAD 2> /dev/null)
+      if refname=$(command git name-rev --name-only HEAD 2> /dev/null); then
+        prefix="$ZSH_THEME_GIT_PROMPT_DETACHED_HEAD_PREFIX"
+        middle="$sha: $refname"
+        suffix="$ZSH_THEME_GIT_PROMPT_DETACHED_HEAD_SUFFIX"
+      else
+        prefix="${ZSH_THEME_GIT_PROMPT_UNREACHABLE_DETACHED_HEAD_PREFIX:-
+                  ZSH_THEME_GIT_PROMPT_DETACHED_HEAD_PREFIX}"
+        middle="$sha"
+        suffix="${ZSH_THEME_GIT_PROMPT_UNREACHABLE_DETACHED_HEAD_SUFFIX:-
+                  ZSH_THEME_GIT_PROMPT_DETACHED_HEAD_SUFFIX}"
+      fi
+    fi
+
+    prefix="$ZSH_THEME_GIT_PROMPT_PREFIX$(git_prompt_remote)$prefix"
+    suffix="$suffix$(git_remote_status)"
+    suffix="$suffix$ZSH_THEME_GIT_PROMPT_SUFFIX"
+
+    echo " $prefix$middle$suffix"
   fi
 }
 
@@ -31,10 +54,11 @@ parse_git_dirty() {
 
 # get the difference between the local and remote branches
 git_remote_status() {
-    remote=${$(command git rev-parse --verify ${hook_com[branch]}@{upstream} --symbolic-full-name 2>/dev/null)/refs\/remotes\/}
+    branch=${$(command git symbolic-ref HEAD 2> /dev/null)/refs\/heads\/} || return 0
+    remote=${$(command git rev-parse --verify $branch@{upstream} --symbolic-full-name 2>/dev/null)/refs\/remotes}
     if [[ -n ${remote} ]] ; then
-        ahead=$(command git rev-list ${hook_com[branch]}@{upstream}..HEAD 2>/dev/null | wc -l)
-        behind=$(command git rev-list HEAD..${hook_com[branch]}@{upstream} 2>/dev/null | wc -l)
+        ahead=$(command git rev-list $branch@{upstream}..HEAD 2>/dev/null | wc -l)
+        behind=$(command git rev-list HEAD..$branch@{upstream} 2>/dev/null | wc -l)
 
         if [ $ahead -gt 0 ] && [ $behind -eq 0 ]
         then
@@ -135,15 +159,15 @@ git_prompt_status() {
   if $(echo "$INDEX" | grep '^UU ' &> /dev/null); then
     STATUS="$ZSH_THEME_GIT_PROMPT_UNMERGED$STATUS"
   fi
-  if $(echo "$INDEX" | grep '^## .*ahead' &> /dev/null); then
-    STATUS="$ZSH_THEME_GIT_PROMPT_AHEAD$STATUS"
-  fi
-  if $(echo "$INDEX" | grep '^## .*behind' &> /dev/null); then
-    STATUS="$ZSH_THEME_GIT_PROMPT_BEHIND$STATUS"
-  fi
-  if $(echo "$INDEX" | grep '^## .*diverged' &> /dev/null); then
-    STATUS="$ZSH_THEME_GIT_PROMPT_DIVERGED$STATUS"
-  fi
+#  if $(echo "$INDEX" | grep '^## .*ahead' &> /dev/null); then
+#    STATUS="$ZSH_THEME_GIT_PROMPT_AHEAD$STATUS"
+#  fi
+#  if $(echo "$INDEX" | grep '^## .*behind' &> /dev/null); then
+#    STATUS="$ZSH_THEME_GIT_PROMPT_BEHIND$STATUS"
+#  fi
+#  if $(echo "$INDEX" | grep '^## .*diverged' &> /dev/null); then
+#    STATUS="$ZSH_THEME_GIT_PROMPT_DIVERGED$STATUS"
+#  fi
   echo $STATUS
 }
 

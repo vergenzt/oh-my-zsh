@@ -48,8 +48,7 @@ function work_in_progress() {
 alias g='git'
 
 alias ga='git add'
-alias gaa='git add --all'
-alias gapa='git add --patch'
+alias gap='git add --patch'
 
 alias gb='git branch'
 alias gba='git branch -a'
@@ -57,31 +56,15 @@ alias gbda='git branch --merged | command grep -vE "^(\*|\s*master\s*$)" | comma
 alias gbl='git blame -b -w'
 alias gbnm='git branch --no-merged'
 alias gbr='git branch --remote'
-alias gbs='git bisect'
-alias gbsb='git bisect bad'
-alias gbsg='git bisect good'
-alias gbsr='git bisect reset'
-alias gbss='git bisect start'
 
-alias gc='git commit -v'
-alias gc!='git commit -v --amend'
-alias gca='git commit -v -a'
-alias gca!='git commit -v -a --amend'
-alias gcan!='git commit -v -a -s --no-edit --amend'
-alias gcb='git checkout -b'
-alias gcf='git config --list'
-alias gcl='git clone --recursive'
-alias gclean='git reset --hard && git clean -dfx'
-alias gcm='git checkout master'
-alias gcmsg='git commit -m'
+alias go='git commit -v'
+alias go!='git commit -v --amend'
+alias goa='git commit -v -a'
+alias goa!='git commit -v -a --amend'
 alias gco='git checkout'
-alias gcount='git shortlog -sn'
-compdef gcount=git
-alias gcp='git cherry-pick'
-alias gcs='git commit -S'
 
 alias gd='git diff'
-alias gdca='git diff --cached'
+alias gdc='git diff --cached'
 alias gdt='git diff-tree --no-commit-id --name-only -r'
 gdv() { git diff -w "$@" | view - }
 compdef _git gdv=git-diff
@@ -93,7 +76,7 @@ function gfg() { git ls-files | grep $@ }
 compdef gfg=grep
 alias gfo='git fetch origin'
 
-alias gg='git gui citool'
+alias gg='git graph'
 alias gga='git gui citool --amend'
 ggf() {
 [[ "$#" != 1 ]] && local b="$(current_branch)"
@@ -199,7 +182,7 @@ alias gsi='git submodule init'
 alias gsps='git show --pretty=short --show-signature'
 alias gsr='git svn rebase'
 alias gss='git status -s'
-alias gst='git status'
+alias gs='git status'
 alias gsta='git stash'
 alias gstaa='git stash apply'
 alias gstd='git stash drop'
