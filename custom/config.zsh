@@ -10,6 +10,9 @@ eval $(dircolors $DOTFILES/dircolors)
 # GT printing
 alias print='lpr -P mobile_black -U tvergenz3'
 
+alias open="xdg-open"
+alias o="open"
+
 # heroku toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
 
