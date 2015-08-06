@@ -131,16 +131,10 @@ git_prompt_status() {
   if $(echo "$INDEX" | command grep -E '^\?\? ' &> /dev/null); then
     STATUS="$ZSH_THEME_GIT_PROMPT_UNTRACKED$STATUS"
   fi
-  if $(echo "$INDEX" | grep '^A  ' &> /dev/null); then
-    STATUS="$ZSH_THEME_GIT_PROMPT_ADDED$STATUS"
-  elif $(echo "$INDEX" | grep '^M  ' &> /dev/null); then
+  if $(echo "$INDEX" | grep '^[AM]. ' &> /dev/null); then
     STATUS="$ZSH_THEME_GIT_PROMPT_ADDED$STATUS"
   fi
-  if $(echo "$INDEX" | grep '^ M ' &> /dev/null); then
-    STATUS="$ZSH_THEME_GIT_PROMPT_MODIFIED$STATUS"
-  elif $(echo "$INDEX" | grep '^AM ' &> /dev/null); then
-    STATUS="$ZSH_THEME_GIT_PROMPT_MODIFIED$STATUS"
-  elif $(echo "$INDEX" | grep '^ T ' &> /dev/null); then
+  if $(echo "$INDEX" | grep '^.M ' &> /dev/null); then
     STATUS="$ZSH_THEME_GIT_PROMPT_MODIFIED$STATUS"
   fi
   if $(echo "$INDEX" | grep '^R  ' &> /dev/null); then
